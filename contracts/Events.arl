@@ -1,0 +1,42 @@
+archetype Events
+
+variable storageValue : int = 12
+
+event ValueReset {
+  cameFrom : address
+}
+
+event ValueChanged {
+  cameFrom : address;
+  newValue : int;
+  changeAmount : int
+}
+
+event WentNegative {
+  cameFrom : address;
+  newValue : int;
+  changeAmount : int
+}
+
+entry increment(delta : int) {
+  storageValue += delta;
+  emit<ValueChanged>({ source ; storageValue; delta });
+}
+
+entry decrement(delta : int) {
+  var newStorage = storageValue - delta;
+  if storageValue > 0 and newStorage < 0 then
+    emit<WentNegative>({ source ; storageValue; delta });
+  storageValue := newStorage;
+}
+
+event MyEvent {
+
+}
+
+entry reset() {
+  storageValue := 0;
+  emit<ValueReset>({ source });
+  emit<MyEvent>({});
+}
+
